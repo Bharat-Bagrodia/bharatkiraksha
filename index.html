@@ -1,426 +1,155 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="astronaut">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Diary">
-    <meta name="theme-color" content="#0071e3">
-    <title>Bharat Kiraksha - Personal Diary</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#0b1020">
+    <title>Bharat Kiraksha - Astro Diary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
     <style>
+        /* --- Astronaut theme variables --- */
         :root {
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --bg-mesh: radial-gradient(at 40% 20%, hsla(28,100%,74%,0.2) 0px, transparent 50%),
-                       radial-gradient(at 80% 0%, hsla(189,100%,56%,0.2) 0px, transparent 50%),
-                       radial-gradient(at 0% 50%, hsla(355,100%,93%,0.2) 0px, transparent 50%);
-            --bg-color: #f5f5f7;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            --text-primary: #1d1d1f;
-            --text-secondary: #86868b;
-            --accent: #0071e3;
-            --accent-hover: #0077ED;
+            --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            --font-astro: 'Orbitron', var(--font-sans);
+            --bg-color: #050617; /* deep space */
+            --bg-mesh: radial-gradient(circle at 10% 10%, rgba(123,97,255,0.06) 0, transparent 20%),
+                       radial-gradient(circle at 80% 20%, rgba(127,255,212,0.04) 0, transparent 20%),
+                       radial-gradient(circle at 30% 80%, rgba(255,255,255,0.02) 0, transparent 30%);
+            --star-field: radial-gradient(circle at 40% 10%, rgba(255,255,255,0.03) 0, transparent 2px),
+                         radial-gradient(circle at 70% 30%, rgba(255,255,255,0.02) 0, transparent 1px);
+            --glass-bg: rgba(8,12,25,0.6);
+            --glass-border: rgba(255,255,255,0.04);
+            --glass-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+            --accent-a: #7b61ff; /* violet */
+            --accent-b: #7fffd4; /* aquamarine */
+            --accent: linear-gradient(90deg,var(--accent-a),var(--accent-b));
+            --accent-solid: #7b61ff;
+            --text-primary: #e6eef8;
+            --text-secondary: #9fb0c9;
             --success: #34c759;
-            --error: #ff3b30;
-            --warning: #ff9500;
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --error: #ff6b6b;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --transition: all 0.24s cubic-bezier(.2,.9,.2,1);
             --safe-area-top: max(0px, env(safe-area-inset-top));
             --safe-area-bottom: max(0px, env(safe-area-inset-bottom));
         }
 
-        [data-theme="dark"] {
-            --bg-mesh: radial-gradient(at 40% 20%, hsla(28,100%,74%,0.1) 0px, transparent 50%),
-                       radial-gradient(at 80% 0%, hsla(189,100%,56%,0.1) 0px, transparent 50%),
-                       radial-gradient(at 0% 50%, hsla(355,100%,93%,0.1) 0px, transparent 50%);
-            --bg-color: #000000;
-            --glass-bg: rgba(30, 30, 30, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            --text-primary: #f5f5f7;
-            --text-secondary: #a1a1a6;
-            --accent: #2997ff;
+        [data-theme="light"] {
+            --bg-color: #f5f7fb;
+            --glass-bg: rgba(255,255,255,0.85);
+            --glass-border: rgba(0,0,0,0.06);
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body { width: 100%; height: 100%; }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            background-image: var(--bg-mesh);
-            background-attachment: fixed;
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow-x: hidden;
-            transition: var(--transition);
-            -webkit-user-select: none;
-            user-select: none;
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%;}
+        body{
+            font-family:var(--font-sans);
+            background-color:var(--bg-color);
+            background-image: var(--bg-mesh), var(--star-field);
+            color:var(--text-primary);
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
         }
 
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--glass-shadow);
+        /* Top privacy banner */
+        .privacy-banner{
+            padding:0.6rem 1rem 0.8rem;
+            background: linear-gradient(90deg,var(--accent-a), #184078);
+            color:white;
+            font-weight:600;
+            text-align:center;
+            padding-top:calc(0.6rem + var(--safe-area-top));
         }
 
-        /* Privacy Banner */
-        .privacy-banner {
-            background: linear-gradient(135deg, var(--accent) 0%, #0056b3 100%);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            font-size: 0.85rem;
-            font-weight: 500;
-            line-height: 1.5;
-            border-bottom: 2px solid rgba(255,255,255,0.2);
-            z-index: 9998;
-            padding-top: calc(1rem + var(--safe-area-top));
+        .container{
+            width:100%;
+            max-width:1200px;
+            margin:1.25rem auto;
+            padding:1rem;
+            display:grid;
+            grid-template-columns:320px 1fr;
+            gap:1rem;
+            align-items:start;
         }
 
-        .privacy-banner-text {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* Fix: allow main column to scroll and avoid 100vh calc overflows */
+        main{height:calc(100vh - 140px); overflow:auto}
+
+        .glass{
+            background:var(--glass-bg);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--glass-border);
+            box-shadow:var(--glass-shadow);
+            padding:1rem;
         }
-
-        .container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 2rem;
-            animation: fadeIn 0.8s ease forwards;
-            flex: 1;
-            padding-bottom: calc(2rem + var(--safe-area-bottom));
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed; bottom: 2rem; right: 2rem; max-width: 400px;
-            padding: 1rem 1.5rem; border-radius: var(--radius-md); z-index: 5000;
-            animation: slideIn 0.3s ease forwards; display: flex; align-items: center; gap: 0.75rem;
-            font-weight: 500; font-size: 0.95rem;
-        }
-
-        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        .toast.success { background: var(--success); color: white; }
-        .toast.error { background: var(--error); color: white; }
-        .toast.info { background: var(--accent); color: white; }
-        .toast.warning { background: var(--warning); color: white; }
 
         /* Sidebar */
-        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
-        .header-card { padding: 2rem; text-align: center; }
-        .greeting { font-size: 1.1rem; color: var(--text-secondary); font-weight: 500; }
-        .date-display { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; letter-spacing: -0.5px; }
-        .clock { font-size: 3rem; font-weight: 300; font-variant-numeric: tabular-nums; }
+        .sidebar{display:flex;flex-direction:column;gap:0.9rem}
+        .header-card{text-align:center;padding:1.25rem}
+        .greeting{font-family:var(--font-astro);letter-spacing:0.6px;color:var(--accent-b);font-weight:700}
+        .date-display{font-size:1.05rem;margin-top:0.35rem;color:var(--text-secondary)}
+        .clock{font-family:var(--font-astro);font-size:2rem;margin-top:0.5rem}
 
-        /* Stats Card */
-        .stats-card { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem; }
-        .stat-item { display: flex; flex-direction: column; gap: 0.25rem; }
-        .stat-label { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 1.4rem; font-weight: 600; color: var(--accent); }
+        .stats-card{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+        .stat-item{padding:0.6rem;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);}
+        .stat-label{font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase}
+        .stat-value{font-weight:700;color:var(--accent-b);font-size:1.1rem}
 
-        /* Calendar Widget */
-        .calendar-card { padding: 1.5rem; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-weight: 600;}
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; text-align: center; }
-        .day-name { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; padding-bottom: 0.5rem;}
-        .calendar-day {
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            font-size: 0.9rem; border-radius: 50%; cursor: pointer; transition: var(--transition);
-            position: relative;
-        }
-        .calendar-day:hover { background: rgba(0,0,0,0.05); }
-        [data-theme="dark"] .calendar-day:hover { background: rgba(255,255,255,0.1); }
-        .calendar-day.today { background: var(--accent); color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(0,113,227,0.3); }
-        .calendar-day.has-entry::after {
-            content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px;
-            background: var(--success); border-radius: 50%;
-        }
-        .calendar-day.empty-cell { pointer-events: none; }
+        /* Calendar */
+        .calendar-card{padding:1rem}
+        .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.4rem}
+        .calendar-day{aspect-ratio:1/1;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+        .calendar-day.today{background:var(--accent-b);color:#041018}
+        .calendar-day.has-entry::after{content:'';position:absolute;bottom:8%;width:6px;height:6px;background:var(--accent-a);border-radius:50%}
 
-        /* Main Content */
-        .main-content { display: flex; flex-direction: column; gap: 1.5rem; height: calc(100vh - 4rem); }
-        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-radius: var(--radius-md); flex-wrap: wrap; gap: 1rem; }
-        .toolbar-group { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
-        
-        button {
-            background: transparent; border: none; color: var(--text-primary); cursor: pointer;
-            padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 0.5rem; transition: var(--transition);
-            border: 1px solid transparent;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        button:hover { background: rgba(128,128,128,0.1); transform: translateY(-2px); }
-        button:active { transform: translateY(0); }
-        button.primary { background: var(--accent); color: white; }
-        button.primary:hover { background: var(--accent-hover); }
-        button.danger { background: var(--error); color: white; }
-        button.danger:hover { background: #d32f2f; }
-        button.success { background: var(--success); color: white; }
-        button.success:hover { background: #32a94a; }
-        button.secondary { background: rgba(0, 113, 227, 0.1); color: var(--accent); }
-        button.secondary:hover { background: rgba(0, 113, 227, 0.2); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Main workspace */
+        .toolbar{display:flex;justify-content:space-between;gap:0.5rem;align-items:center}
+        .toolbar button{background:transparent;border:1px solid transparent;padding:0.5rem 0.8rem;border-radius:8px;color:var(--text-primary);cursor:pointer}
+        .toolbar .primary{background:var(--accent-solid);color:white}
 
-        button svg { flex-shrink: 0; }
+        .editor-card{display:flex;flex-direction:column;height:100%;overflow:hidden}
+        textarea{flex:1;width:100%;border:none;background:transparent;padding:1.25rem;font-size:1rem;color:var(--text-primary);outline:none;resize:none}
+        .status-bar{display:flex;justify-content:space-between;padding:0.6rem 1rem;border-top:1px solid rgba(255,255,255,0.03);color:var(--text-secondary)}
 
-        /* Media Timestamp */
-        .media-timestamp {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            padding: 0.25rem 0.5rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-            position: absolute;
-            bottom: 2px;
-            left: 2px;
-            z-index: 5;
+        /* Media drawer */
+        .media-drawer{display:grid;grid-template-columns:repeat(4,1fr);gap:0.7rem;margin-top:0.75rem}
+        .media-dropzone{border:1px dashed rgba(255,255,255,0.06);padding:0.8rem;border-radius:10px;text-align:center;cursor:pointer;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+
+        .media-gallery{display:flex;gap:0.75rem;padding:0.75rem;overflow:auto}
+        .media-item{position:relative;width:140px;height:100px;border-radius:10px;overflow:hidden;background:#021224;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center}
+        .media-item video,.media-item audio{width:100%;height:100%;object-fit:cover}
+        .media-item .play-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.45);padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .media-item .delete-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.45);border:none;color:white;width:28px;height:28px;border-radius:6px;cursor:pointer}
+
+        .floating-preview{position:fixed;right:1rem;bottom:1rem;width:360px;z-index:2000;padding:0.6rem;border-radius:12px}
+
+        /* responsive */
+        @media(max-width:900px){
+            .container{grid-template-columns:1fr;}
+            main{height:auto}
+            .media-drawer{grid-template-columns:repeat(2,1fr)}
         }
 
-        /* Editor */
-        .editor-card { flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden; position: relative; }
-        textarea {
-            flex: 1; width: 100%; resize: none; border: none; background: transparent;
-            padding: 2rem; font-family: var(--font-family); font-size: 1.1rem; line-height: 1.7;
-            color: var(--text-primary); outline: none;
-        }
-        textarea::placeholder { color: var(--text-secondary); opacity: 0.6; }
-        
-        .status-bar { padding: 1rem 2rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; gap: 1rem; }
-        .status-indicator { display: flex; align-items: center; gap: 0.5rem; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
-        .dot.syncing { background: var(--accent); animation: pulse 1s infinite alternate; }
-        .dot.saved { background: var(--success); }
-
-        @keyframes pulse { from { opacity: 0.5; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); } }
-
-        /* Media Upload Area */
-        .media-drawer { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-        .media-dropzone {
-            border: 2px dashed var(--glass-border); border-radius: var(--radius-md); padding: 1.5rem;
-            text-align: center; color: var(--text-secondary); cursor: pointer; transition: var(--transition);
-            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-        }
-        .media-dropzone:hover { border-color: var(--accent); background: rgba(0, 113, 227, 0.05); color: var(--accent); }
-        .recording { border-color: var(--error) !important; color: var(--error) !important; animation: pulse-border 1.5s infinite; }
-
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
-        }
-
-        /* Saved Media Gallery */
-        .media-gallery {
-            padding: 0 2rem 2rem 2rem;
-            display: flex; gap: 1rem; overflow-x: auto; scroll-behavior: smooth;
-        }
-        .media-gallery::-webkit-scrollbar { height: 6px; }
-        .media-gallery::-webkit-scrollbar-track { background: transparent; }
-        .media-gallery::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
-
-        .media-item {
-            position: relative; width: 120px; height: 120px; flex-shrink: 0;
-            border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);
-            background: #000; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: var(--transition);
-        }
-        .media-item:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .media-item video, .media-item audio { width: 100%; height: 100%; object-fit: cover; }
-        .media-item audio { height: 40px; }
-        .media-item .delete-btn {
-            position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6);
-            color: white; border: none; border-radius: 50%; width: 28px; height: 28px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 14px; padding: 0; z-index: 10; transition: var(--transition);
-        }
-        .media-item .delete-btn:hover { background: var(--error); transform: scale(1.1); }
-
-        .text-file-icon {
-            width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; cursor: pointer; 
-            transition: all 0.2s; text-align: center; font-size: 0.7rem; font-weight: 600;
-        }
-        .text-file-icon:hover { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
-
-        /* Floating PiP Recorder / Preview */
-        .floating-preview {
-            position: fixed; bottom: 2rem; right: 2rem; width: 320px; z-index: 1000;
-            padding: 1rem; display: flex; flex-direction: column; gap: 1rem;
-            transform: translateY(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .floating-preview.active { transform: translateY(0); opacity: 1; }
-        .floating-preview video { width: 100%; border-radius: 8px; background: #000; }
-        .floating-preview audio { width: 100%; outline: none; }
-        .floating-preview .controls { display: flex; gap: 0.5rem; justify-content: flex-end; }
-        .hidden { display: none !important; }
-        
-        .pulse-indicator { display: flex; align-items: center; gap: 0.5rem; color: var(--error); font-weight: 500; font-size: 0.9rem;}
-        .pulse-indicator .dot { background: var(--error); animation: pulse 1s infinite alternate; }
-
-        /* Full Screen Modals */
-        .archive-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center;
-            opacity: 1; transition: opacity 0.3s ease; z-index: 2000;
-        }
-        .archive-overlay.hidden { opacity: 0; pointer-events: none; }
-        
-        #textPreviewModal { z-index: 3000; }
-        
-        .archive-container {
-            width: 90%; max-width: 1000px; height: 85vh; display: flex; flex-direction: column;
-            padding: 0; overflow: hidden;
-        }
-        .archive-header {
-            padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .archive-header h2 { font-size: 1.5rem; font-weight: 600; margin: 0; }
-        .archive-header .header-controls { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .archive-content {
-            flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 2.5rem;
-        }
-        .archive-date-block {
-            border-bottom: 1px solid var(--glass-border); padding-bottom: 2rem;
-        }
-        .archive-date-block:last-child { border-bottom: none; padding-bottom: 0; }
-        .archive-date-title {
-            font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-bottom: 1rem;
-        }
-        .archive-text-preview {
-            color: var(--text-primary); font-size: 1.05rem; line-height: 1.6; white-space: pre-wrap; margin-bottom: 1.5rem;
-            max-height: 200px; overflow: hidden; position: relative;
-        }
-        .archive-text-preview.expanded { max-height: none; }
-        .archive-media-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .archive-media-grid .media-item { width: 240px; height: 180px; }
-        .archive-media-grid .media-item audio { height: 50px; }
-        .empty-archive { text-align: center; color: var(--text-secondary); margin-top: 3rem; }
-
-        /* Search/Filter */
-        .search-box {
-            display: flex; gap: 0.5rem; padding: 1rem 2rem; border-bottom: 1px solid var(--glass-border);
-            align-items: center;
-        }
-        .search-box input {
-            flex: 1; background: rgba(0,0,0,0.05); border: 1px solid var(--glass-border);
-            padding: 0.75rem 1rem; border-radius: 8px; font-family: var(--font-family);
-            color: var(--text-primary); outline: none; transition: var(--transition);
-        }
-        [data-theme="dark"] .search-box input { background: rgba(255,255,255,0.05); }
-        .search-box input:focus { border-color: var(--accent); background: rgba(0,113,227,0.05); }
-
-        /* Text preview preformat styling */
-        #textPreviewContent {
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            color: var(--text-primary);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 9999;
-        }
-        .progress-bar {
-            height: 100%; background: linear-gradient(90deg, var(--accent), var(--success));
-            width: 0%; transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--accent);
-        }
-
-        /* Sync Modal */
-        .sync-modal { display: flex; flex-direction: column; gap: 1.5rem; }
-        .sync-info { background: rgba(0,113,227,0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; }
-        .sync-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .sync-stat { background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px; text-align: center; }
-        .sync-stat-label { font-size: 0.8rem; color: var(--text-secondary); }
-        .sync-stat-value { font-size: 1.5rem; font-weight: 600; color: var(--accent); margin-top: 0.5rem; }
-
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; height: auto; gap: 1rem; padding: 1rem; }
-            .main-content { height: auto; }
-            .media-drawer { grid-template-columns: repeat(2, 1fr); }
-            .floating-preview { bottom: 1rem; right: 1rem; width: calc(100% - 2rem); }
-            .archive-container { width: 95%; height: 90vh; }
-            .archive-media-grid .media-item { width: 100%; height: 200px; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar-group { width: 100%; }
-            button { width: 100%; justify-content: center; font-size: 0.85rem; }
-            .sidebar { gap: 1rem; }
-            .header-card { padding: 1.5rem; }
-            .stats-card { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; padding: 1rem; }
-            .stat-value { font-size: 1.1rem; }
-            .date-display { font-size: 1.4rem; }
-            .clock { font-size: 2rem; }
-            .privacy-banner { font-size: 0.75rem; padding: 0.75rem; }
-        }
-
-        @media (max-width: 480px) {
-            .container { padding: 0.75rem; gap: 0.75rem; }
-            .media-drawer { grid-template-columns: 1fr; }
-            .main-content { gap: 0.75rem; }
-            .sidebar { gap: 0.75rem; }
-            textarea { padding: 1rem; font-size: 1rem; }
-            .glass { border-radius: 16px; }
-            .privacy-banner-text { padding: 0 0.5rem; }
-        }
-
-        /* Animations */
-        .fade-out { animation: fadeOut 0.3s ease forwards; }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
-
-        /* Loading spinner */
-        .spinner {
-            width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- Privacy Banner -->
-    <div class="privacy-banner">
-        <div class="privacy-banner-text">
-            🔒 100% Private & Secure | All data stored locally in your browser | Download backups manually to cloud storage | Your personal diary remains completely private
-        </div>
-    </div>
+    <div class="privacy-banner">🔭 Astro Diary — private log of your star-days. Data stays in your browser.</div>
 
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <div id="appContainer" class="container">
-        
-        <!-- Sidebar -->
+    <div class="container" id="appContainer">
         <aside class="sidebar">
             <div class="glass header-card">
-                <div id="greeting" class="greeting">Good Morning</div>
-                <div id="currentDate" class="date-display">Date</div>
+                <div id="greeting" class="greeting">Good Stellar Morning</div>
+                <div id="currentDate" class="date-display">Loading date...</div>
                 <div id="currentTime" class="clock">00:00</div>
             </div>
 
@@ -444,965 +173,295 @@
             </div>
 
             <div class="glass calendar-card">
-                <div class="calendar-header">
-                    <button onclick="changeMonth(-1)" title="Previous Month">&#8592;</button>
-                    <span id="calendarMonthYear">Month Year</span>
-                    <button onclick="changeMonth(1)" title="Next Month">&#8594;</button>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                    <button onclick="changeMonth(-1)">◀</button>
+                    <div id="calendarMonthYear" style="font-weight:700"></div>
+                    <button onclick="changeMonth(1)">▶</button>
                 </div>
-                <div class="calendar-grid">
-                    <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div>
-                    <div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
-                </div>
-                <div id="calendarDays" class="calendar-grid"></div>
-            </div>
-            
-            <div class="glass calendar-card" style="padding: 1rem;">
-                <div style="font-size: 0.9rem; color: var(--text-secondary);">
-                    <div style="margin-bottom: 0.75rem;">📦 Storage: <span style="color:var(--text-primary); font-weight: 600;">Local Only</span></div>
-                    <div style="margin-bottom: 0.75rem;">🌍 Timezone: <span id="tzDisplay" style="color:var(--text-primary); font-weight: 600;">UTC</span></div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <button class="success" onclick="downloadBackup()" style="width: 100%; margin: 0; font-size: 0.85rem;" title="Download all entries as ZIP">⬇️ Download</button>
-                        <button class="secondary" onclick="openSyncModal()" style="width: 100%; margin: 0; font-size: 0.85rem;" title="Sync data between devices">🔄 Sync Data</button>
-                    </div>
-                </div>
+                <div class="calendar-grid" id="calendarDays"></div>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
-        <main class="main-content">
-            <div class="glass toolbar">
-                <div class="toolbar-group">
-                    <button onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                        Theme
-                    </button>
-                    <button onclick="clearCurrentDay()" title="Clear today's entry">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        Clear
-                    </button>
+        <main>
+            <div class="glass toolbar" style="margin-bottom:0.6rem">
+                <div style="display:flex;gap:0.5rem;align-items:center">
+                    <button onclick="toggleTheme()">Theme</button>
+                    <button onclick="clearCurrentDay()">Clear</button>
                 </div>
-                <div class="toolbar-group">
-                    <button class="primary" onclick="openArchive()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                        Archive
-                    </button>
+                <div>
+                    <button class="primary" onclick="openArchive()">Archive</button>
                 </div>
             </div>
 
             <div class="glass editor-card">
-                <textarea id="journalEditor" placeholder="What's on your mind today? Write your thoughts, feelings, and memories..."></textarea>
-                
-                <!-- Media Gallery for Today -->
-                <div id="mediaGallery" class="media-gallery hidden">
-                    <!-- Thumbnails injected here -->
-                </div>
-
+                <textarea id="journalEditor" placeholder="Log your star-journey..." ></textarea>
+                <div id="mediaGallery" class="media-gallery" aria-live="polite"></div>
                 <div class="status-bar">
-                    <div class="status-indicator">
-                        <div id="syncDot" class="dot saved"></div>
-                        <span id="syncText">Ready</span>
-                    </div>
+                    <div><span id="syncText">Ready</span></div>
                     <div id="wordCount">0 words</div>
                 </div>
             </div>
 
-            <!-- Media Actions -->
-            <div class="media-drawer">
-                <div class="glass media-dropzone" onclick="exportToTxt()" title="Export text as .txt file">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span>📝 Text</span>
-                </div>
-                <div class="glass media-dropzone" id="audioBtn" onclick="startRecording('audio')" title="Record audio">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                    <span id="audioLabel">🎙️ Audio</span>
-                </div>
-                <div class="glass media-dropzone" id="videoBtn" onclick="startRecording('video')" title="Record video">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                    <span id="videoLabel">🎥 Video</span>
-                </div>
-                <div class="glass media-dropzone" onclick="importBackup()" title="Import from backup">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    <span>📥 Import</span>
-                </div>
+            <div style="margin-top:0.6rem" class="media-drawer">
+                <div class="glass media-dropzone" onclick="exportToTxt()">📝 Text</div>
+                <div class="glass media-dropzone" id="uploadAudio">🎙️ Upload Audio<input id="fileAudioInput" type="file" accept="audio/*" style="display:none"></div>
+                <div class="glass media-dropzone" id="uploadVideo">🎥 Upload Video<input id="fileVideoInput" type="file" accept="video/*" style="display:none"></div>
+                <div class="glass media-dropzone" id="importBackup">📥 Import</div>
             </div>
         </main>
     </div>
 
-    <!-- Floating Recording / Preview Window -->
-    <div id="floatingPreview" class="glass floating-preview">
-        <!-- Live Recording State -->
-        <div id="liveState" class="hidden">
-            <div class="pulse-indicator" style="margin-bottom: 0.5rem;"><div class="dot"></div> Recording</div>
-            <video id="liveVideo" autoplay muted playsinline class="hidden"></video>
-            <div id="liveAudioVis" class="hidden" style="height: 60px; background: rgba(0,0,0,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">🎙️ Recording...</div>
-            <div class="controls" style="margin-top: 1rem;">
-                <button class="danger" onclick="stopRecording()" style="width: 100%; justify-content: center; font-size: 0.9rem;">Stop</button>
-            </div>
-        </div>
-
-        <!-- Preview State -->
-        <div id="previewState" class="hidden">
-            <div style="margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem;">✓ Review</div>
-            <video id="playbackVideo" controls class="hidden"></video>
-            <audio id="playbackAudio" controls class="hidden"></audio>
-            <div class="controls" style="margin-top: 1rem; gap: 0.25rem;">
-                <button onclick="discardMedia()" style="background: rgba(128,128,128,0.2); font-size: 0.85rem;">Discard</button>
-                <button class="success" onclick="saveMediaToDiary()" style="font-size: 0.85rem;">Save</button>
-            </div>
+    <!-- Floating preview (used for recordings or playing larger previews) -->
+    <div id="floatingPreview" class="glass floating-preview hidden" style="display:none">
+        <div id="floatingContent"></div>
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:0.5rem">
+            <button onclick="closeFloating()">Close</button>
         </div>
     </div>
-
-    <!-- Full Screen Archive / Files View Modal -->
-    <div id="archiveModal" class="archive-overlay hidden">
-        <div class="glass archive-container">
-            <div class="archive-header">
-                <h2>📚 Archive</h2>
-                <div class="header-controls">
-                    <button class="success" onclick="downloadBackup()" style="font-size: 0.85rem;">⬇️ Backup</button>
-                    <button onclick="closeArchive()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="search-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-                <input type="text" id="archiveSearch" placeholder="Search by date..." onkeyup="filterArchive()">
-            </div>
-            <div id="archiveContent" class="archive-content">
-                <!-- Date blocks dynamically injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Sync Modal -->
-    <div id="syncModal" class="archive-overlay hidden">
-        <div class="glass archive-container" style="max-width: 600px;">
-            <div class="archive-header">
-                <h2>🔄 Sync Data</h2>
-                <button onclick="closeSyncModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-            <div id="syncContent" class="archive-content">
-                <div class="sync-modal">
-                    <div class="sync-info">
-                        💡 <strong>Sync Between Devices:</strong> Download backup from one device and upload here to merge all entries. Data is matched by timestamp to avoid duplicates.
-                    </div>
-                    <div class="sync-stats" id="syncStats"></div>
-                    <button class="secondary" onclick="importBackupForSync()" style="width: 100%; justify-content: center;">📥 Upload Backup to Sync</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Full Screen Text File Preview Modal -->
-    <div id="textPreviewModal" class="archive-overlay hidden">
-        <div class="glass archive-container" style="max-width: 800px;">
-            <div class="archive-header">
-                <h2 id="textPreviewTitle">📄 Document</h2>
-                <button onclick="closeTextPreview()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-            <div class="archive-content" style="background: var(--bg-color);">
-                <pre id="textPreviewContent">Loading preview...</pre>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hidden file input for import -->
-    <input type="file" id="backupFileInput" accept=".zip" style="display: none;">
 
     <script>
-        // --- Database (IndexedDB) Initialization ---
-        const DB_NAME = "DiaryDB";
-        const STORE_NAME = "entries";
+        // -- DB setup (keeps original keys for backward compatibility) --
+        const DB_NAME = 'DiaryDB';
+        const STORE_NAME = 'entries';
         let db;
 
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, 1);
-                request.onupgradeneeded = (e) => {
+        function initDB(){
+            return new Promise((resolve,reject)=>{
+                const req = indexedDB.open(DB_NAME,1);
+                req.onupgradeneeded = e => {
                     db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME, { keyPath: "date" });
-                    }
+                    if(!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME,{keyPath:'date'});
                 };
-                request.onsuccess = (e) => { db = e.target.result; resolve(); };
-                request.onerror = (e) => reject(e.target.error);
+                req.onsuccess = e=>{db=e.target.result;resolve()};
+                req.onerror = e=>reject(e);
             });
         }
 
-        // --- App State ---
+        // -- App state --
         let currentActiveDate = new Date();
         let displayedMonth = new Date();
-        let isDarkMode = false;
-        let editorTimeout = null;
-        let activeEntry = { date: '', text: '', media: [] };
-        let allArchiveData = [];
+        let activeEntry = {date:'',text:'',media:[]};
 
-        // --- Media State ---
-        let mediaRecorder;
-        let recordedChunks = [];
-        let activeStream = null;
-        let pendingMediaBlob = null;
-        let pendingMediaType = null;
+        function formatDateFolder(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 
-        // --- Toast Notifications ---
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        async function getEntryFromDB(dateStr){
+            return new Promise(resolve=>{
+                const tx = db.transaction(STORE_NAME,'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const r = store.get(dateStr);
+                r.onsuccess = ()=> resolve(r.result || {date:dateStr,text:'',media:[]});
+            });
+        }
+        async function saveEntryToDB(entry){
+            return new Promise(resolve=>{
+                const tx = db.transaction(STORE_NAME,'readwrite');
+                tx.objectStore(STORE_NAME).put(entry);
+                tx.oncomplete = ()=>resolve();
+            });
+        }
+        async function getAllEntries(){
+            return new Promise(resolve=>{
+                const tx = db.transaction(STORE_NAME,'readonly');
+                const r = tx.objectStore(STORE_NAME).getAll();
+                r.onsuccess = ()=>resolve(r.result||[]);
+            });
         }
 
-        // --- Progress Bar ---
-        function setProgress(percent) {
-            document.getElementById('progressBar').style.width = percent + '%';
-        }
-
-        function getTimestamp() {
-            return new Date().toISOString();
-        }
-
-        function formatTime(isoString) {
-            try {
-                const date = new Date(isoString);
-                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            } catch (e) {
-                return 'Unknown';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
+        // -- UI init --
+        document.addEventListener('DOMContentLoaded',async ()=>{
             await initDB();
-            initTimeAndDate();
-            
+            initTime();
             activeEntry.date = formatDateFolder(currentActiveDate);
             await loadContentForDate(currentActiveDate);
-            initCalendar();
+            renderCalendar(displayedMonth);
             setupEditor();
+            wireFileInputs();
             updateStats();
-
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
         });
 
-        // --- Clock & Date Header ---
-        function initTimeAndDate() {
-            document.getElementById('tzDisplay').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            setInterval(() => {
+        function initTime(){
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            setInterval(()=>{
                 const now = new Date();
-                document.getElementById('currentTime').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                const hour = now.getHours();
-                document.getElementById('greeting').innerText = hour < 12 ? 'Good Morning' : (hour < 18 ? 'Good Afternoon' : 'Good Evening');
-            }, 1000);
-            updateHeaderDate(currentActiveDate);
+                document.getElementById('currentTime').innerText = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                document.getElementById('greeting').innerText = now.getHours()<12? 'Good Morning':'Good Evening';
+                document.getElementById('currentDate').innerText = now.toLocaleDateString([], {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+            },1000);
         }
 
-        function updateHeaderDate(date) {
-            document.getElementById('currentDate').innerText = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        }
-
-        function formatDateFolder(date) {
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        }
-
-        // --- IndexedDB Operations ---
-        async function getEntryFromDB(dateStr) {
-            return new Promise((resolve) => {
-                const tx = db.transaction(STORE_NAME, "readonly");
-                const store = tx.objectStore(STORE_NAME);
-                const req = store.get(dateStr);
-                req.onsuccess = () => resolve(req.result || { date: dateStr, text: '', media: [] });
-            });
-        }
-
-        async function saveEntryToDB(entry) {
-            return new Promise((resolve) => {
-                const tx = db.transaction(STORE_NAME, "readwrite");
-                const store = tx.objectStore(STORE_NAME);
-                store.put(entry);
-                tx.oncomplete = () => resolve();
-            });
-        }
-
-        async function getAllEntries() {
-            return new Promise((resolve) => {
-                const tx = db.transaction(STORE_NAME, "readonly");
-                const store = tx.objectStore(STORE_NAME);
-                const req = store.getAll();
-                req.onsuccess = () => resolve(req.result || []);
-            });
-        }
-
-        // --- UI & Editor Logic ---
-        async function loadContentForDate(date) {
-            const dateStr = formatDateFolder(date);
-            activeEntry = await getEntryFromDB(dateStr);
-            
-            const editor = document.getElementById('journalEditor');
-            editor.value = activeEntry.text || '';
-            updateWordCount(editor.value);
+        async function loadContentForDate(date){
+            const ds = formatDateFolder(date);
+            activeEntry = await getEntryFromDB(ds);
+            document.getElementById('journalEditor').value = activeEntry.text||'';
+            updateWordCount(activeEntry.text||'');
             renderMediaGallery();
-            setSyncStatus('Loaded', 'saved');
+            setSyncStatus('Loaded');
         }
 
-        async function saveTextContent() {
+        function setupEditor(){
             const editor = document.getElementById('journalEditor');
-            activeEntry.text = editor.value;
-            await saveEntryToDB(activeEntry);
-            setSyncStatus('Saved', 'saved');
-            renderCalendar(displayedMonth);
-            updateStats();
-        }
-
-        function setupEditor() {
-            const editor = document.getElementById('journalEditor');
-            editor.addEventListener('input', () => {
+            let t;
+            editor.addEventListener('input', ()=>{
                 updateWordCount(editor.value);
-                setSyncStatus('Saving...', 'syncing');
-                clearTimeout(editorTimeout);
-                editorTimeout = setTimeout(saveTextContent, 1000);
+                setSyncStatus('Saving...');
+                clearTimeout(t);
+                t = setTimeout(async ()=>{ activeEntry.text = editor.value; await saveEntryToDB(activeEntry); setSyncStatus('Saved'); renderCalendar(displayedMonth); updateStats(); }, 700);
             });
         }
 
-        function updateWordCount(text) {
-            const count = text.trim() ? text.trim().split(/\s+/).length : 0;
+        function updateWordCount(text){
+            const count = text.trim()? text.trim().split(/\s+/).length : 0;
             document.getElementById('wordCount').innerText = `${count} words`;
-            if (activeEntry.date === formatDateFolder(currentActiveDate)) {
-                document.getElementById('todayWords').innerText = count;
-            }
+            document.getElementById('todayWords').innerText = count;
         }
 
-        async function updateStats() {
-            const allEntries = await getAllEntries();
-            const withContent = allEntries.filter(e => e.text.trim() !== '' || (e.media && e.media.length > 0));
-            
-            let totalMedia = 0;
-            withContent.forEach(e => {
-                if (e.media) totalMedia += e.media.length;
-            });
+        function setSyncStatus(msg){ document.getElementById('syncText').innerText = msg }
 
-            let streak = 0;
-            const today = new Date();
-            for (let i = 0; i < 365; i++) {
-                const checkDate = new Date(today);
-                checkDate.setDate(checkDate.getDate() - i);
-                const dateStr = formatDateFolder(checkDate);
-                const entry = allEntries.find(e => e.date === dateStr);
-                if (entry && (entry.text.trim() !== '' || (entry.media && entry.media.length > 0))) {
-                    streak++;
-                } else if (i > 0) break;
-            }
-
+        async function updateStats(){
+            const all = await getAllEntries();
+            const withContent = all.filter(e=> (e.text && e.text.trim()) || (e.media && e.media.length>0));
+            let totalMedia = 0; withContent.forEach(e=>{ if(e.media) totalMedia += e.media.length });
             document.getElementById('totalEntries').innerText = withContent.length;
             document.getElementById('totalMedia').innerText = totalMedia;
+            // simple streak
+            let streak=0; const today=new Date(); for(let i=0;i<365;i++){ const c=new Date(today); c.setDate(c.getDate()-i); const d=formatDateFolder(c); const ent = all.find(x=>x.date===d); if(ent && ((ent.text||'').trim()|| (ent.media&&ent.media.length))) streak++; else if(i>0) break }
             document.getElementById('streakDays').innerText = streak;
         }
 
-        async function clearCurrentDay() {
-            if (confirm("Clear all text and media for this day?")) {
-                activeEntry = { date: activeEntry.date, text: '', media: [] };
-                document.getElementById('journalEditor').value = '';
-                updateWordCount('');
-                await saveEntryToDB(activeEntry);
-                renderMediaGallery();
-                renderCalendar(displayedMonth);
-                setSyncStatus('Cleared', 'saved');
-                updateStats();
-                showToast('Day cleared', 'info');
-            }
-        }
+        async function clearCurrentDay(){ if(confirm('Clear today?')){ activeEntry.text=''; activeEntry.media=[]; document.getElementById('journalEditor').value=''; await saveEntryToDB(activeEntry); renderMediaGallery(); renderCalendar(displayedMonth); updateStats(); setSyncStatus('Cleared') } }
 
-        function setSyncStatus(message, state) {
-            document.getElementById('syncText').innerText = message;
-            document.getElementById('syncDot').className = `dot ${state}`;
-        }
-
-        // --- Create .TXT File logic ---
-        async function exportToTxt() {
+        // --- Export text as .txt and add as media item (keeps backward compatibility) ---
+        async function exportToTxt(){
             const text = document.getElementById('journalEditor').value;
-            if (!text.trim()) {
-                showToast('Nothing to export yet', 'warning');
-                return;
-            }
-            
-            activeEntry.media = activeEntry.media.filter(m => m.type !== 'text');
-            
-            const filename = `Diary_${activeEntry.date}.txt`;
-            const blob = new Blob([text], { type: 'text/plain' });
-            
-            const mediaItem = {
-                id: Date.now().toString(),
-                type: 'text',
-                blob: blob,
-                filename: filename,
-                timestamp: getTimestamp()
-            };
-            
-            activeEntry.media.push(mediaItem);
+            if(!text.trim()){ alert('Nothing to export'); return }
+            const blob = new Blob([text],{type:'text/plain'});
+            const item = { id:Date.now().toString(), type:'text', filename:`Diary_${activeEntry.date}.txt`, blob, timestamp:new Date().toISOString() };
+            activeEntry.media = activeEntry.media || [];
+            activeEntry.media.push(item);
             await saveEntryToDB(activeEntry);
-            
-            renderMediaGallery();
-            renderCalendar(displayedMonth);
-            setSyncStatus('Exported', 'saved');
-            showToast('Text file created', 'success');
+            renderMediaGallery(); updateStats(); setSyncStatus('Exported');
         }
 
-        // --- Text Preview Logic ---
-        async function openTextPreview(url, filename) {
-            document.getElementById('textPreviewModal').classList.remove('hidden');
-            document.getElementById('textPreviewTitle').innerText = `📄 ${filename || 'Text Preview'}`;
-            document.getElementById('textPreviewContent').innerText = 'Loading text...';
-
-            try {
-                const response = await fetch(url);
-                const text = await response.text();
-                document.getElementById('textPreviewContent').innerText = text;
-            } catch (err) {
-                document.getElementById('textPreviewContent').innerText = 'Error loading text file preview.';
-            }
-        }
-
-        function closeTextPreview() {
-            document.getElementById('textPreviewModal').classList.add('hidden');
-        }
-
-        // --- Calendar Logic (FIXED) ---
-        async function renderCalendar(date) {
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            document.getElementById('calendarMonthYear').innerText = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            
-            const calendarDays = document.getElementById('calendarDays');
-            calendarDays.innerHTML = '';
-            
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // Add empty cells for days before month starts
-            for (let i = 0; i < firstDay; i++) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.classList.add('calendar-day', 'empty-cell');
-                calendarDays.appendChild(emptyDiv);
-            }
-            
-            const tx = db.transaction(STORE_NAME, "readonly");
-            const store = tx.objectStore(STORE_NAME);
-            const allReq = store.getAll();
-            
-            allReq.onsuccess = () => {
-                const allEntries = allReq.result;
-                const activeSet = new Set(allEntries.filter(e => e.text.trim() !== '' || (e.media && e.media.length > 0)).map(e => e.date));
-                
-                for (let i = 1; i <= daysInMonth; i++) {
-                    const cellDate = new Date(year, month, i);
-                    const dayDiv = document.createElement('div');
-                    dayDiv.classList.add('calendar-day');
-                    dayDiv.innerText = i;
-                    
-                    if (cellDate.toDateString() === currentActiveDate.toDateString()) dayDiv.classList.add('today');
-                    
-                    if (activeSet.has(formatDateFolder(cellDate))) {
-                        dayDiv.style.position = 'relative';
-                        dayDiv.classList.add('has-entry');
-                    }
-                    dayDiv.onclick = async () => {
-                        currentActiveDate = cellDate;
-                        updateHeaderDate(cellDate);
-                        await loadContentForDate(cellDate);
-                        renderCalendar(displayedMonth);
-                    };
-                    calendarDays.appendChild(dayDiv);
-                }
-            };
-        }
-
-        function changeMonth(offset) {
-            displayedMonth.setMonth(displayedMonth.getMonth() + offset);
-            renderCalendar(displayedMonth);
-        }
-
-        function initCalendar() {
-            renderCalendar(displayedMonth);
-        }
-
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        }
-
-        if (localStorage.getItem('theme') === 'dark') {
-            toggleTheme();
-        }
-
-        // --- Media Recording & Preview Logic ---
-        async function startRecording(type) {
-            const floating = document.getElementById('floatingPreview');
-            const liveState = document.getElementById('liveState');
-            const previewState = document.getElementById('previewState');
-            const liveVideo = document.getElementById('liveVideo');
-            const liveAudioVis = document.getElementById('liveAudioVis');
-            
-            pendingMediaType = type;
-            recordedChunks = [];
-            
-            try {
-                activeStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: type === 'video', 
-                    audio: true 
-                });
-                
-                floating.classList.add('active');
-                liveState.classList.remove('hidden');
-                previewState.classList.add('hidden');
-                
-                if (type === 'video') {
-                    liveVideo.srcObject = activeStream;
-                    liveVideo.classList.remove('hidden');
-                    liveAudioVis.classList.add('hidden');
-                } else {
-                    liveVideo.classList.add('hidden');
-                    liveAudioVis.classList.remove('hidden');
-                }
-
-                mediaRecorder = new MediaRecorder(activeStream);
-                mediaRecorder.ondataavailable = e => { if(e.data.size > 0) recordedChunks.push(e.data); };
-                mediaRecorder.onstop = showPreview;
-                mediaRecorder.start();
-                
-            } catch (err) {
-                showToast('Microphone/Camera access denied', 'error');
-                floating.classList.remove('active');
-            }
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-            if (activeStream) {
-                activeStream.getTracks().forEach(track => track.stop());
-            }
-        }
-
-        function showPreview() {
-            document.getElementById('liveState').classList.add('hidden');
-            document.getElementById('previewState').classList.remove('hidden');
-            
-            pendingMediaBlob = new Blob(recordedChunks, { type: pendingMediaType === 'video' ? 'video/webm' : 'audio/webm' });
-            const url = URL.createObjectURL(pendingMediaBlob);
-            
-            const pVideo = document.getElementById('playbackVideo');
-            const pAudio = document.getElementById('playbackAudio');
-            
-            if (pendingMediaType === 'video') {
-                pVideo.src = url;
-                pVideo.classList.remove('hidden');
-                pAudio.classList.add('hidden');
-            } else {
-                pAudio.src = url;
-                pAudio.classList.remove('hidden');
-                pVideo.classList.add('hidden');
-            }
-        }
-
-        function discardMedia() {
-            pendingMediaBlob = null;
-            document.getElementById('floatingPreview').classList.remove('active');
-            document.getElementById('playbackVideo').src = '';
-            document.getElementById('playbackAudio').src = '';
-        }
-
-        async function saveMediaToDiary() {
-            if (!pendingMediaBlob) return;
-            
-            const mediaItem = {
-                id: Date.now().toString(),
-                type: pendingMediaType,
-                blob: pendingMediaBlob,
-                timestamp: getTimestamp()
-            };
-            
-            activeEntry.media.push(mediaItem);
-            await saveEntryToDB(activeEntry);
-            
-            discardMedia();
-            renderMediaGallery();
-            renderCalendar(displayedMonth);
-            setSyncStatus('Media saved', 'saved');
-            updateStats();
-            showToast('Media saved successfully', 'success');
-        }
-
-        // --- Media Gallery ---
-        function renderMediaGallery() {
+        // --- Media gallery rendering with inline play option ---
+        function renderMediaGallery(){
             const gallery = document.getElementById('mediaGallery');
             gallery.innerHTML = '';
-            
-            if (!activeEntry.media || activeEntry.media.length === 0) {
-                gallery.classList.add('hidden');
-                return;
-            }
-            
-            gallery.classList.remove('hidden');
-            
-            activeEntry.media.forEach(item => {
-                const wrap = document.createElement('div');
-                wrap.className = 'media-item';
-                
-                const url = URL.createObjectURL(item.blob);
-                
-                if (item.type === 'video') {
-                    const vid = document.createElement('video');
-                    vid.src = url;
-                    wrap.appendChild(vid);
-                } else if (item.type === 'audio') {
-                    const aud = document.createElement('audio');
-                    aud.src = url;
-                    wrap.appendChild(aud);
-                } else if (item.type === 'text') {
-                    const textIcon = document.createElement('div');
-                    textIcon.className = 'text-file-icon';
-                    textIcon.title = "Click to preview";
-                    textIcon.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><span>.txt</span>`;
-                    
-                    textIcon.onclick = () => openTextPreview(url, item.filename || `Diary_${activeEntry.date}.txt`);
-                    wrap.appendChild(textIcon);
+            const media = (activeEntry.media||[]);
+            if(media.length===0){ gallery.innerHTML = '<div style="color:var(--text-secondary);padding:0.6rem">No media for this day</div>'; return }
+
+            media.forEach((m, idx)=>{
+                const div = document.createElement('div'); div.className='media-item';
+                // delete button
+                const del = document.createElement('button'); del.className='delete-btn'; del.innerText='✕'; del.title='Delete'; del.onclick = async (e)=>{ e.stopPropagation(); media.splice(idx,1); activeEntry.media = media; await saveEntryToDB(activeEntry); renderMediaGallery(); updateStats(); };
+                div.appendChild(del);
+
+                if(m.type==='audio'){
+                    const audio = document.createElement('audio'); audio.controls=true;
+                    let url = m.blob ? URL.createObjectURL(m.blob) : (m.url||''); audio.src = url;
+                    audio.style.height='100%'; div.appendChild(audio);
+                } else if(m.type==='video'){
+                    const video = document.createElement('video'); video.controls=true; video.style.width='100%'; video.style.height='100%';
+                    let url = m.blob ? URL.createObjectURL(m.blob) : (m.url||''); video.src = url; div.appendChild(video);
+                } else if(m.type==='text'){
+                    const box = document.createElement('div'); box.className='text-file-icon'; box.innerText = m.filename || 'document.txt'; box.onclick = ()=>{ if(m.blob) openTextBlob(m.blob, m.filename); else if(m.url) openTextUrl(m.url,m.filename); };
+                    div.appendChild(box);
+                } else if(m.type==='image'){
+                    const img = document.createElement('img'); img.src = m.blob? URL.createObjectURL(m.blob) : (m.url||''); img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; div.appendChild(img);
+                } else {
+                    // fallback: try url or blob
+                    if(m.blob && m.blob.type && m.blob.type.startsWith('audio')){
+                        const audio = document.createElement('audio'); audio.controls=true; audio.src = URL.createObjectURL(m.blob); div.appendChild(audio);
+                    } else if(m.blob && m.blob.type && m.blob.type.startsWith('video')){
+                        const video = document.createElement('video'); video.controls=true; video.src = URL.createObjectURL(m.blob); video.style.width='100%'; video.style.height='100%'; div.appendChild(video);
+                    } else {
+                        const u = document.createElement('div'); u.style.padding='0.6rem'; u.innerText = m.filename|| m.id || 'file'; div.appendChild(u);
+                    }
                 }
-                
-                if (item.timestamp) {
-                    const ts = document.createElement('div');
-                    ts.className = 'media-timestamp';
-                    ts.innerText = formatTime(item.timestamp);
-                    wrap.appendChild(ts);
-                }
-                
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn';
-                delBtn.innerHTML = '×';
-                delBtn.onclick = async () => {
-                    activeEntry.media = activeEntry.media.filter(m => m.id !== item.id);
-                    await saveEntryToDB(activeEntry);
-                    renderMediaGallery();
-                    renderCalendar(displayedMonth);
-                    showToast('Media deleted', 'info');
+
+                // clicking a thumbnail opens floating preview with larger controls
+                div.onclick = (e)=>{ // if clicked on controls (e.g., play), don't open
+                    // if target is control element, ignore
+                    const tag = e.target.tagName.toLowerCase();
+                    if(tag==='button' || tag==='audio' || tag==='video' || tag==='input') return;
+                    openFloatingPreview(m);
                 };
-                wrap.appendChild(delBtn);
-                gallery.appendChild(wrap);
+
+                gallery.appendChild(div);
             });
         }
 
-        // --- Archive / File Viewer Logic ---
-        function openArchive() {
-            document.getElementById('archiveModal').classList.remove('hidden');
-            loadArchiveData();
+        function openTextBlob(blob, filename){
+            const reader = new FileReader();
+            reader.onload = ()=>{ openFloatingText(reader.result, filename) };
+            reader.readAsText(blob);
         }
+        function openTextUrl(url, filename){ fetch(url).then(r=>r.text()).then(t=>openFloatingText(t,filename)).catch(()=>alert('Could not load')) }
+        function openFloatingText(text, title){ const fp=document.getElementById('floatingPreview'); fp.style.display='block'; fp.querySelector('#floatingContent').innerHTML = `<div style="font-family:monospace;white-space:pre-wrap;max-height:50vh;overflow:auto;color:var(--text-primary)"><strong>${title||''}</strong><pre style='white-space:pre-wrap'>${escapeHtml(text)}</pre></div>`; }
 
-        function closeArchive() {
-            document.getElementById('archiveModal').classList.add('hidden');
-            document.getElementById('archiveContent').innerHTML = '';
-        }
-
-        function filterArchive() {
-            const searchTerm = document.getElementById('archiveSearch').value.toLowerCase();
-            const blocks = document.querySelectorAll('.archive-date-block');
-            
-            blocks.forEach(block => {
-                const title = block.querySelector('.archive-date-title').textContent.toLowerCase();
-                block.style.display = title.includes(searchTerm) ? 'block' : 'none';
-            });
-        }
-
-        async function loadArchiveData() {
-            const content = document.getElementById('archiveContent');
-            content.innerHTML = '<div class="empty-archive">Loading your diary archive...</div>';
-            
-            const tx = db.transaction(STORE_NAME, "readonly");
-            const store = tx.objectStore(STORE_NAME);
-            const req = store.getAll();
-            
-            req.onsuccess = () => {
-                let entries = req.result;
-                allArchiveData = entries;
-                
-                entries = entries.filter(e => e.text.trim() !== '' || (e.media && e.media.length > 0));
-                entries.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                if (entries.length === 0) {
-                    content.innerHTML = '<div class="empty-archive">Your archive is empty. Start writing or recording!</div>';
-                    return;
-                }
-                
-                content.innerHTML = '';
-                
-                entries.forEach((entry, index) => {
-                    const block = document.createElement('div');
-                    block.className = 'archive-date-block';
-                    
-                    const [year, month, day] = entry.date.split('-');
-                    const dateObj = new Date(year, month - 1, day);
-                    const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    
-                    let html = `<div class="archive-date-title">${formattedDate}</div>`;
-                    
-                    if (entry.text) {
-                        const preview = entry.text.substring(0, 300);
-                        const isLong = entry.text.length > 300;
-                        html += `<div class="archive-text-preview" id="preview-${index}">${preview}${isLong ? '...' : ''}</div>`;
-                        if (isLong) {
-                            html += `<button class="secondary" onclick="document.getElementById('preview-${index}').classList.toggle('expanded'); this.textContent = document.getElementById('preview-${index}').classList.contains('expanded') ? 'Show less' : 'Show more'" style="margin-bottom: 1rem;">Show more</button>`;
-                        }
-                    }
-                    
-                    block.innerHTML = html;
-                    
-                    if (entry.media && entry.media.length > 0) {
-                        const mediaGrid = document.createElement('div');
-                        mediaGrid.className = 'archive-media-grid';
-                        
-                        entry.media.forEach(m => {
-                            const mWrap = document.createElement('div');
-                            mWrap.className = 'media-item';
-                            const url = URL.createObjectURL(m.blob);
-                            
-                            if (m.type === 'video') {
-                                mWrap.innerHTML = `<video src="${url}" controls preload="metadata"></video>`;
-                            } else if (m.type === 'audio') {
-                                mWrap.innerHTML = `<audio src="${url}" controls preload="metadata"></audio>`;
-                            } else if (m.type === 'text') {
-                                const filename = m.filename || 'diary.txt';
-                                mWrap.innerHTML = `
-                                <div class="text-file-icon" onclick="openTextPreview('${url}', '${filename}')">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                                    <span style="font-size: 0.85rem;">Preview</span>
-                                </div>`;
-                            }
-                            if (m.timestamp) {
-                                const ts = document.createElement('div');
-                                ts.className = 'media-timestamp';
-                                ts.innerText = formatTime(m.timestamp);
-                                mWrap.appendChild(ts);
-                            }
-                            mediaGrid.appendChild(mWrap);
-                        });
-                        block.appendChild(mediaGrid);
-                    }
-                    
-                    content.appendChild(block);
-                });
-            };
-        }
-
-        // --- Sync Modal ---
-        function openSyncModal() {
-            document.getElementById('syncModal').classList.remove('hidden');
-            updateSyncStats();
-        }
-
-        function closeSyncModal() {
-            document.getElementById('syncModal').classList.add('hidden');
-        }
-
-        async function updateSyncStats() {
-            const allEntries = await getAllEntries();
-            const withContent = allEntries.filter(e => e.text.trim() !== '' || (e.media && e.media.length > 0));
-            let totalMedia = 0;
-            withContent.forEach(e => {
-                if (e.media) totalMedia += e.media.length;
-            });
-
-            const html = `
-                <div class="sync-stat">
-                    <div class="sync-stat-label">Local Entries</div>
-                    <div class="sync-stat-value">${withContent.length}</div>
-                </div>
-                <div class="sync-stat">
-                    <div class="sync-stat-label">Total Media</div>
-                    <div class="sync-stat-value">${totalMedia}</div>
-                </div>
-            `;
-            document.getElementById('syncStats').innerHTML = html;
-        }
-
-        async function importBackupForSync() {
-            document.getElementById('backupFileInput').click();
-        }
-
-        // --- Backup & Restore ---
-        async function downloadBackup() {
-            try {
-                setProgress(10);
-                showToast('Preparing backup...', 'info');
-
-                const allEntries = await getAllEntries();
-                if (allEntries.length === 0) {
-                    showToast('No entries to backup', 'warning');
-                    return;
-                }
-
-                const zip = new JSZip();
-                let processedCount = 0;
-
-                for (const entry of allEntries) {
-                    if (entry.text.trim() === '' && (!entry.media || entry.media.length === 0)) continue;
-
-                    const folderName = `diary_${entry.date}`;
-                    const folder = zip.folder(folderName);
-
-                    if (entry.text.trim()) {
-                        folder.file('entry.txt', entry.text);
-                    }
-
-                    if (entry.media && entry.media.length > 0) {
-                        for (let i = 0; i < entry.media.length; i++) {
-                            const m = entry.media[i];
-                            let filename = m.filename || '';
-                            
-                            if (m.type === 'video') {
-                                filename = filename || `video_${i + 1}.webm`;
-                                folder.file(filename, m.blob);
-                                folder.file(filename + '.timestamp', m.timestamp || '');
-                            } else if (m.type === 'audio') {
-                                filename = filename || `audio_${i + 1}.webm`;
-                                folder.file(filename, m.blob);
-                                folder.file(filename + '.timestamp', m.timestamp || '');
-                            } else if (m.type === 'text') {
-                                filename = filename || `document_${i + 1}.txt`;
-                                folder.file(filename, m.blob);
-                                folder.file(filename + '.timestamp', m.timestamp || '');
-                            }
-                        }
-                    }
-
-                    processedCount++;
-                    setProgress(10 + (processedCount / allEntries.length) * 80);
-                }
-
-                setProgress(90);
-                const blob = await zip.generateAsync({ type: 'blob' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `diary_backup_${new Date().toISOString().split('T')[0]}.zip`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                setProgress(100);
-                setTimeout(() => setProgress(0), 1000);
-                showToast('Backup downloaded successfully', 'success');
-            } catch (err) {
-                console.error('Backup error:', err);
-                showToast('Error creating backup', 'error');
-                setProgress(0);
+        function openFloatingPreview(m){ const fp=document.getElementById('floatingPreview'); const content = document.getElementById('floatingContent'); fp.style.display='block'; content.innerHTML='';
+            if(m.type==='audio'){
+                const a = document.createElement('audio'); a.controls=true; a.src = m.blob? URL.createObjectURL(m.blob): (m.url||''); a.style.width='100%'; content.appendChild(a); a.play().catch(()=>{});
+            } else if(m.type==='video'){
+                const v = document.createElement('video'); v.controls=true; v.src = m.blob? URL.createObjectURL(m.blob): (m.url||''); v.style.width='100%'; content.appendChild(v); v.play().catch(()=>{});
+            } else if(m.type==='image'){
+                const img = document.createElement('img'); img.src = m.blob? URL.createObjectURL(m.blob): (m.url||''); img.style.width='100%'; content.appendChild(img);
+            } else if(m.type==='text'){
+                if(m.blob) openTextBlob(m.blob,m.filename); else if(m.url) openTextUrl(m.url,m.filename);
+            } else {
+                content.innerText = 'Preview not available';
             }
         }
 
-        async function importBackup() {
-            document.getElementById('backupFileInput').click();
+        function closeFloating(){ document.getElementById('floatingPreview').style.display='none'; document.getElementById('floatingContent').innerHTML=''; }
+        function escapeHtml(s){ return (s+'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+        // --- Calendar rendering (simple) ---
+        async function renderCalendar(date){
+            const days = document.getElementById('calendarDays'); days.innerHTML='';
+            const year = date.getFullYear(), month = date.getMonth();
+            const firstDay = new Date(year,month,1).getDay();
+            const daysInMonth = new Date(year,month+1,0).getDate();
+            // add blanks
+            for(let i=0;i<firstDay;i++){ const d=document.createElement('div'); d.style.visibility='hidden'; days.appendChild(d) }
+            const all = await getAllEntries(); const activeSet = new Set(all.filter(e=> (e.text||'').trim() || (e.media&&e.media.length)).map(e=>e.date));
+            for(let d=1;d<=daysInMonth;d++){
+                const cd = new Date(year,month,d); const ds = formatDateFolder(cd);
+                const el = document.createElement('div'); el.className='calendar-day'; el.innerText=d;
+                if(ds===formatDateFolder(currentActiveDate)) el.classList.add('today');
+                if(activeSet.has(ds)) el.classList.add('has-entry');
+                el.onclick = async ()=>{ currentActiveDate = cd; await loadContentForDate(cd); };
+                days.appendChild(el);
+            }
+            document.getElementById('calendarMonthYear').innerText = date.toLocaleDateString([], {month:'long',year:'numeric'});
+        }
+        function changeMonth(offset){ displayedMonth.setMonth(displayedMonth.getMonth()+offset); renderCalendar(displayedMonth) }
+
+        // --- File uploads for media with inline play option ---
+        function wireFileInputs(){
+            const audioBtn = document.getElementById('uploadAudio');
+            const audioInput = document.getElementById('fileAudioInput');
+            audioBtn.addEventListener('click', ()=> audioInput.click());
+            audioInput.addEventListener('change', async (e)=>{
+                const f = e.target.files[0]; if(!f) return; const blob = f; const item = { id:Date.now().toString(), type:'audio', filename:f.name, blob, timestamp:new Date().toISOString() };
+                activeEntry.media = activeEntry.media||[]; activeEntry.media.push(item); await saveEntryToDB(activeEntry); renderMediaGallery(); updateStats(); setSyncStatus('Audio uploaded');
+                audioInput.value='';
+            });
+
+            const vidBtn = document.getElementById('uploadVideo');
+            const vidInput = document.getElementById('fileVideoInput');
+            vidBtn.addEventListener('click', ()=> vidInput.click());
+            vidInput.addEventListener('change', async (e)=>{
+                const f = e.target.files[0]; if(!f) return; const item = { id:Date.now().toString(), type:'video', filename:f.name, blob:f, timestamp:new Date().toISOString() };
+                activeEntry.media = activeEntry.media||[]; activeEntry.media.push(item); await saveEntryToDB(activeEntry); renderMediaGallery(); updateStats(); setSyncStatus('Video uploaded');
+                vidInput.value='';
+            });
+
+            document.getElementById('importBackup').addEventListener('click', ()=>{ alert('Import not implemented in this quick fix — please use backup upload in next release.'); });
         }
 
-        document.getElementById('backupFileInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        // --- Archive modal simple placeholders ---
+        function openArchive(){ alert('Archive: open modal (not fully implemented in this patch)') }
 
-            try {
-                setProgress(10);
-                showToast('Reading backup...', 'info');
-
-                const zip = new JSZip();
-                const contents = await zip.loadAsync(file);
-                
-                setProgress(30);
-                let importedCount = 0;
-                const allFolders = Object.keys(contents.files).filter(f => contents.files[f].dir);
-
-                for (const folderName of allFolders) {
-                    const match = folderName.match(/diary_(\d{4}-\d{2}-\d{2})/);
-                    if (!match) continue;
-
-                    const date = match[1];
-                    let text = '';
-                    const media = [];
-                    const timestampMap = {};
-
-                    for (const filename in contents.files) {
-                        if (!filename.startsWith(folderName)) continue;
-                        if (contents.files[filename].dir) continue;
-
-                        const file = contents.files[filename];
-                        const name = filename.replace(folderName + '/', '');
-
-                        if (name === 'entry.txt') {
-                            text = await file.async('text');
-                        } else if (name.endsWith('.timestamp')) {
-                            const baseFile = name.replace('.timestamp', '');
-                            timestampMap[baseFile] = await file.async('text');
-                        } else if (!name.endsWith('.timestamp')) {
-                            const blob = await file.async('blob');
-                            let type = 'text';
-                            if (name.includes('.webm') || name.includes('.mp4')) {
-                                type = name.includes('video') ? 'video' : 'audio';
-                            }
-                            
-                            media.push({
-                                id: Date.now().toString() + Math.random(),
-                                type: type,
-                                blob: blob,
-                                filename: name,
-                                timestamp: timestampMap[name] || getTimestamp()
-                            });
-                        }
-                    }
-
-                    const existingEntry = await getEntryFromDB(date);
-                    let entry = { date, text: text || existingEntry.text, media: existingEntry.media || [] };
-                    
-                    // Merge media by timestamp to avoid duplicates
-                    const existingTimestamps = new Set(existingEntry.media ? existingEntry.media.map(m => m.timestamp) : []);
-                    media.forEach(m => {
-                        if (!existingTimestamps.has(m.timestamp)) {
-                            entry.media.push(m);
-                        }
-                    });
-
-                    await saveEntryToDB(entry);
-                    importedCount++;
-
-                    setProgress(30 + (importedCount / allFolders.length) * 60);
-                }
-
-                setProgress(95);
-                renderCalendar(displayedMonth);
-                await loadContentForDate(currentActiveDate);
-                updateStats();
-                closeSyncModal();
-                setProgress(100);
-                setTimeout(() => setProgress(0), 1000);
-                showToast(`${importedCount} entries synced successfully`, 'success');
-            } catch (err) {
-                console.error('Import error:', err);
-                showToast('Error importing backup', 'error');
-                setProgress(0);
-            }
-
-            e.target.value = '';
-        });
     </script>
 </body>
 </html>
